@@ -396,6 +396,9 @@ async function connectWallet() {
     ethereum.on('accountsChanged', async function () {
         await assign();
     });
+    ethereum.on('chainChanged', () => {
+        window.location.reload();
+    });
 
     await assign();
 
