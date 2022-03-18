@@ -20,7 +20,6 @@ let supraContract = false;
 let usdcContract = false;
 let qtmContract = false;
 
-let web3Instance = new Web3X('https://rpc.ftm.tools/');
 window.onload = async function () {
     if (screen.width <= 699 && !sessionStorage.getItem("redirecting")) {
         window.location.replace("./mobile.html");
@@ -380,6 +379,7 @@ function SnackBar(userOptions) {
 }
 
 async function connectWallet() {
+    let web3Instance = new Web3X('https://rpc.ftm.tools/');
     if (typeof ethereum === 'undefined') {
         jQuery('#buyQTMButton').attr('disabled', 'disabled');
         jQuery('#buyQTMButton').text('NO WALLET');
@@ -486,33 +486,36 @@ async function updateAllowance() {
     qtmAllowance = await supraContract.methods.allowance(fSaccount, buyQTMAddress).call();
 
     if (supra1Allowance === '0') {
-        console.log("supra1", supra1Allowance);
+        jQuery('#buySupra1Button').removeAttr('click');
         jQuery('#buySupra1Button').removeAttr('disabled');
         jQuery('#buySupra1Text').text('APPROVE');
         jQuery('#buySupra1Button').click(approveSupraTokenContract1);
     } else {
+        jQuery('#buySupra1Button').removeAttr('click');
         jQuery('#buySupra1Button').removeAttr('disabled');
         jQuery('#buySupra1Text').text('EXCHANGE');
         jQuery('#buySupra1Button').click(buySupra1);
     }
 
     if (supra2Allowance === '0') {
-        console.log("supra2", supra2Allowance);
+        jQuery('#buySupra2Button').removeAttr('click');
         jQuery('#buySupra2Button').removeAttr('disabled');
         jQuery('#buySupra2Text').text('APPROVE');
         jQuery('#buySupra2Button').click(approveSupraTokenContract2);
     } else {
+        jQuery('#buySupra2Button').removeAttr('click');
         jQuery('#buySupra2Button').removeAttr('disabled');
         jQuery('#buySupra2Text').text('EXCHANGE');
         jQuery('#buySupra2Button').click(buySupra2);
     }
 
     if (supra3Allowance === '0') {
-        console.log("supra3", supra3Allowance);
+        jQuery('#buySupra3Button').removeAttr('click');
         jQuery('#buySupra3Button').removeAttr('disabled');
         jQuery('#buySupra3Text').text('APPROVE');
         jQuery('#buySupra3Button').click(approveSupraTokenContract3);
     } else {
+        jQuery('#buySupra3Button').removeAttr('click');
         jQuery('#buySupra3Button').removeAttr('disabled');
         jQuery('#buySupra3Text').text('EXCHANGE');
         jQuery('#buySupra3Button').click(buySupra3);
@@ -520,11 +523,12 @@ async function updateAllowance() {
     console.log("supra1q", qtmAllowance);
 
     if (qtmAllowance === '0') {
-        console.log("supra1q", qtmAllowance);
+        jQuery('#buyQTMButton').removeAttr('click');
         jQuery('#buyQTMButton').removeAttr('disabled');
         jQuery('#buyQTMText').text('APPROVE');
         jQuery('#buyQTMButton').click(approveQTMTokenContract);
     } else {
+        jQuery('#buyQTMButton').removeAttr('click');
         jQuery('#buyQTMButton').removeAttr('disabled');
         jQuery('#buyQTMText').text('EXCHANGE');
         jQuery('#buyQTMButton').click(buyQTM);
