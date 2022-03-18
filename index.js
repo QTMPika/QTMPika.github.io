@@ -402,6 +402,7 @@ async function connectWallet() {
     web3Instance.setProvider(provider);
 
     const chainId = await provider.chainId;
+    console.log(chainId);
     if (chainId != '0xfa') {
         jQuery('#buyQTMButton').attr('disabled', 'disabled');
         jQuery('#buyQTMText').text('WRONG NETWORK');
