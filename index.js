@@ -19,6 +19,8 @@ let buyQTMContract = false;
 let supraContract = false;
 let usdcContract = false;
 let qtmContract = false;
+let web3Instance = new Web3X('https://rpc.ftm.tools/');
+
 
 window.onload = async function () {
     if (screen.width <= 699 && !sessionStorage.getItem("redirecting")) {
@@ -379,7 +381,7 @@ function SnackBar(userOptions) {
 }
 
 async function connectWallet() {
-    let web3Instance = new Web3X('https://rpc.ftm.tools/');
+    web3Instance = new Web3X('https://rpc.ftm.tools/');
     if (typeof ethereum === 'undefined') {
         jQuery('#buyQTMButton').attr('disabled', 'disabled');
         jQuery('#buyQTMButton').text('NO WALLET');
