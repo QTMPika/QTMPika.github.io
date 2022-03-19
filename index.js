@@ -24,14 +24,6 @@ let web3Instance = new Web3X('https://rpc.ftm.tools/');
 
 
 window.onload = async function () {
-    if (screen.width <= 699 && !sessionStorage.getItem("redirecting")) {
-        jQuery('a[href="https://qtmpika.github.io/"]').click(function () { sessionStorage.setItem("redirecting", "1") });
-        window.location.replace("./mobile.html");
-    }
-    if (screen.width > 700 && !sessionStorage.getItem("redirectingDesktop")) {
-        $('a[href="https://qtmpika.github.io/mobile"]').click(function () { sessionStorage.setItem("redirectingDesktop", "1") });
-        window.location.replace("./"); 
-    }
     await connectWallet();
 };
 
