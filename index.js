@@ -538,7 +538,6 @@ async function updateAllowance() {
 }
 
 async function approveQTMTokenContract() {
-    console.log('Hey!')
     const approval = await supraContract.methods.approve(buyQTMAddress, '1000000000000000000000000').send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
@@ -615,7 +614,7 @@ async function approveSupraTokenContract3() {
 }
 
 async function buyQTM() {
-    var result = await buyQTMContract.methods.singleRedeem(0).send({ from: fSaccount, gasPrice: '40000000000' })
+    var result = await buyQTMContract.methods.singleRedeem(0).send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
                 message: hash ? `Transaction Send` : 'Declined',
@@ -638,7 +637,8 @@ async function buyQTM() {
 async function buySupra1() {
     const val = jQuery('#usdcAmount1').val();
     const valFormatted = val * Math.pow(10, 6);
-    var result = await buy1Contract.methods.buySupra(valFormatted).send({ from: fSaccount, gasPrice: '40000000000' })
+    console.log(valFormatted);
+    var result = await buy1Contract.methods.buySupra(valFormatted).send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
                 message: hash ? `Transaction Send` : 'Declined',
@@ -659,7 +659,7 @@ async function buySupra1() {
 }
 
 async function buySupra2() {
-    var result = await buyQTMContract.methods.singleRedeem().send({ from: fSaccount, gasPrice: '40000000000' })
+    var result = await buyQTMContract.methods.singleRedeem().send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
                 message: hash ? `Transaction Send` : 'Declined',
@@ -680,7 +680,7 @@ async function buySupra2() {
 }
 
 async function buySupra3() {
-    var result = await buyQTMContract.methods.singleRedeem().send({ from: fSaccount, gasPrice: '40000000000' })
+    var result = await buyQTMContract.methods.singleRedeem().send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
                 message: hash ? `Transaction Send` : 'Declined',
