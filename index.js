@@ -3,6 +3,8 @@ const supraAddress = '0xee90faf3216dfae5e8ac1f3f48f10527f38fff78';
 const usdcAddress = '0x04068da6c83afcfa0e13ba15a6696662335d5b75';
 const buyQTMAddress = '0xc625792613CAeAeD2F2fcdaA8d05218260CcC872';
 const buySupra1Address = '0xD567f218D0a4151Ae2Bc08B969AA90B0D9401fD7';
+const buySupra2Address = '0x0b11a7BD09f3CA416559b39Ee8AF137b8E5FA667';
+const buySupra3Address = '0x6a932a20677f275F7326c67dcEd73e2d6641bB53';
 
 let fSaccount = false;
 let fSprovider = false;
@@ -20,8 +22,10 @@ let buyQTMContract = false;
 let supraContract = false;
 let usdcContract = false;
 let qtmContract = false;
+let usdcBalanceX = false;
 let web3Instance = new Web3X('https://rpc.ftm.tools/');
 
+window.setInterval(checkSupraRemaining, 1000);
 
 window.onload = async function () {
     await connectWallet();
@@ -458,6 +462,7 @@ async function getBalances() {
     qtmBalance = await qtmContract.methods.balanceOf(fSaccount).call();
     qtmBalance = qtmBalance / Math.pow(10, qtmDecimals);
     qtmBalance = parseFloat(qtmBalance).toFixed(2)
+    usdcBalanceX = usdcBalance;
     jQuery('#supraWallet').text(supraBalance);
     jQuery('#qtmWallet').text(qtmBalance);
     jQuery('#usdcWallet').text(usdcBalance);
@@ -468,23 +473,77 @@ async function getBalances() {
 
 function onChangeAmount1() {
     const val = jQuery('#usdcAmount1').val();
-    jQuery('#receiveSupra1Text').text(`You will receive ${parseFloat(val / 20).toFixed(2)} SUPRA`);
+    const supraVal = parseFloat(val / 20).toFixed(2)
+    let validOperation = true;
+    jQuery('#receiveSupra1Text').text(`You will receive ${supraVal} SUPRA`);
+    if (supraVal > supra1Remaining && supra1Allowance !== '0') {
+        jQuery('#buySupra1Button').attr('disabled', 'disabled');
+        jQuery('#buySupra1Text').text('NOT ENOUGH SUPRA');
+        validOperation = false;
+    }
+    if (val > usdcBalanceX && supra1Allowance !== '0') {
+        jQuery('#buySupra1Button').attr('disabled', 'disabled');
+        jQuery('#buySupra1Text').text('NOT ENOUGH USDC');
+        validOperation = false;
+    }
+    if (validOperation) {
+        jQuery("#buySupra1Button").off('click');
+        jQuery('#buySupra1Button').removeAttr('disabled');
+        jQuery('#buySupra1Text').text('EXCHANGE');
+        jQuery('#buySupra1Button').click(buySupra1);
+    }
 }
 
 function onChangeAmount2() {
     const val = jQuery('#usdcAmount2').val();
-    jQuery('#receiveSupra2Text').text(`You will receive ${parseFloat(val / 30).toFixed(2)} SUPRA`);
+    const supraVal = parseFloat(val / 30).toFixed(2)
+    let validOperation = true;
+    jQuery('#receiveSupra2Text').text(`You will receive ${supraVal} SUPRA`);
+    if (supraVal > supra2Remaining && supra2Allowance !== '0') {
+        jQuery('#buySupra2Button').attr('disabled', 'disabled');
+        jQuery('#buySupra2Text').text('NOT ENOUGH SUPRA');
+        validOperation = false;
+    }
+    if (val > usdcBalanceX && supra2Allowance !== '0') {
+        jQuery('#buySupra2Button').attr('disabled', 'disabled');
+        jQuery('#buySupra2Text').text('NOT ENOUGH USDC');
+        validOperation = false;
+    } 
+    if (validOperation) {
+        jQuery("#buySupra2Button").off('click');
+        jQuery('#buySupra2Button').removeAttr('disabled');
+        jQuery('#buySupra2Text').text('EXCHANGE');
+        jQuery('#buySupra2Button').click(buySupra1);
+    }
 }
 
 function onChangeAmount3() {
     const val = jQuery('#usdcAmount3').val();
-    jQuery('#receiveSupra3Text').text(`You will receive ${parseFloat(val / 50).toFixed(2)} SUPRA`);
+    const supraVal = parseFloat(val / 50).toFixed(2)
+    let validOperation = true;
+    jQuery('#receiveSupra3Text').text(`You will receive ${supraVal} SUPRA`);
+    if (supraVal > supra3Remaining && supra3Allowance !== '0') {
+        jQuery('#buySupra3Button').attr('disabled', 'disabled');
+        jQuery('#buySupra3Text').text('NOT ENOUGH SUPRA');
+        validOperation = false;
+    }
+    if (val > usdcBalanceX && supra3Allowance !== '0') {
+        jQuery('#buySupra3Button').attr('disabled', 'disabled');
+        jQuery('#buySupra3Text').text('NOT ENOUGH USDC');
+        validOperation = false;
+    } 
+    if (validOperation) {
+        jQuery("#buySupra3Button").off('click');
+        jQuery('#buySupra3Button').removeAttr('disabled');
+        jQuery('#buySupra3Text').text('EXCHANGE');
+        jQuery('#buySupra3Button').click(buySupra1);
+    }
 }
 
 async function updateAllowance() {
     supra1Allowance = await usdcContract.methods.allowance(fSaccount, buySupra1Address).call();
-    /*supra2Allowance = await buy2Contract.methods.allowance(fSaccount, usdcAddress).call();
-    supra3Allowance = await buy3Contract.methods.allowance(fSaccount, usdcAddress).call();*/
+    supra2Allowance = await usdcContract.methods.allowance(fSaccount, buySupra2Address).call();
+    supra3Allowance = await usdcContract.methods.allowance(fSaccount, buySupra3Address).call();
     qtmAllowance = await supraContract.methods.allowance(fSaccount, buyQTMAddress).call();
 
     if (supra1Allowance === '0') {
@@ -522,7 +581,6 @@ async function updateAllowance() {
         jQuery('#buySupra3Text').text('EXCHANGE');
         jQuery('#buySupra3Button').click(buySupra3);
     }
-    console.log("supra1q", qtmAllowance);
 
     if (qtmAllowance === '0') {
         jQuery("#buyQTMButton").off('click'); 
@@ -576,7 +634,7 @@ async function approveSupraTokenContract1() {
 }
 
 async function approveSupraTokenContract2() {
-    const approval = await buy2Contract.methods.approve(usdcAddress, '1000000000000000000000000').send({ from: fSaccount })
+    const approval = await usdcContract.methods.approve(buySupra2Address, '1000000000000000000000000').send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
                 message: hash ? `Transaction Send` : 'Declined',
@@ -595,7 +653,7 @@ async function approveSupraTokenContract2() {
 }
 
 async function approveSupraTokenContract3() {
-    const approval = await buy3Contract.methods.approve(usdcAddress, '1000000000000000000000000').send({ from: fSaccount })
+    const approval = await usdcContract.methods.approve(buySupra3Address, '1000000000000000000000000').send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
                 message: hash ? `Transaction Send` : 'Declined',
@@ -637,7 +695,6 @@ async function buyQTM() {
 async function buySupra1() {
     const val = jQuery('#usdcAmount1').val();
     const valFormatted = val * Math.pow(10, 6);
-    console.log(valFormatted);
     var result = await buy1Contract.methods.buySupra(valFormatted).send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
@@ -659,7 +716,9 @@ async function buySupra1() {
 }
 
 async function buySupra2() {
-    var result = await buyQTMContract.methods.singleRedeem().send({ from: fSaccount })
+    const val = jQuery('#usdcAmount2').val();
+    const valFormatted = val * Math.pow(10, 6);
+    var result = await buy2Contract.methods.buySupra(valFormatted).send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
                 message: hash ? `Transaction Send` : 'Declined',
@@ -680,7 +739,9 @@ async function buySupra2() {
 }
 
 async function buySupra3() {
-    var result = await buyQTMContract.methods.singleRedeem().send({ from: fSaccount })
+    const val = jQuery('#usdcAmount3').val();
+    const valFormatted = val * Math.pow(10, 6);
+    var result = await buy3Contract.methods.buySupra(valFormatted).send({ from: fSaccount })
         .on('transactionHash', function (hash) {
             new SnackBar({
                 message: hash ? `Transaction Send` : 'Declined',
@@ -700,9 +761,24 @@ async function buySupra3() {
     }
 }
 
+async function checkSupraRemaining() {
+    supra1Remaining = await buy1Contract.methods.availableSupra().call();
+    supra2Remaining = await buy2Contract.methods.availableSupra().call();
+    supra3Remaining = await buy3Contract.methods.availableSupra().call();
+    supra1Remaining = supra1Remaining / Math.pow(10, 18)
+    supra2Remaining = supra2Remaining / Math.pow(10, 18)
+    supra3Remaining = supra3Remaining / Math.pow(10, 18)
+    jQuery('#supra1Remaining').text(`${parseFloat(supra1Remaining).toFixed(2)} SUPRA remaining`);
+    jQuery('#supra2Remaining').text(`${parseFloat(supra2Remaining).toFixed(2)} SUPRA remaining`);
+    jQuery('#supra3Remaining').text(`${parseFloat(supra3Remaining).toFixed(2)} SUPRA remaining`);
+}
+
+
 async function assign() {
     buyQTMContract = new web3Instance.eth.Contract(qtmAbi, buyQTMAddress);
     buy1Contract = new web3Instance.eth.Contract(buySupraAbi, buySupra1Address);
+    buy2Contract = new web3Instance.eth.Contract(buySupraAbi, buySupra2Address);
+    buy3Contract = new web3Instance.eth.Contract(buySupraAbi, buySupra3Address);
     supraContract = new web3Instance.eth.Contract(tokenAbi, supraAddress);
     usdcContract = new web3Instance.eth.Contract(tokenAbi, usdcAddress);
     qtmContract = new web3Instance.eth.Contract(tokenAbi, qtmAddress);
